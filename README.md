@@ -69,45 +69,6 @@ scrape_configs:
           - 10.8.0.10:9212
 ```
 
-## GitHub Actions
-
-This repository includes GitHub Actions workflows under `.github/workflows/`:
-
-- `test.yml` runs separate jobs for Ruff formatting/lint checks, Python tests, coverage, SonarQube analysis, Trivy filesystem/secret scans, and Trivy IaC scans.
-- `build.yml` builds and pushes the Docker image to GitHub Container Registry.
-- `renovate.yml` runs Renovate against the current GitHub repository.
-
-Required GitHub variables:
-
-- `SONAR_URL` - SonarQube server URL, if SonarQube analysis is enabled.
-
-Required GitHub secrets:
-
-- `SONAR_TOKEN` - token for SonarQube analysis.
-- `RENOVATE_TOKEN` - GitHub token used by Renovate.
-
-Renovate rules are in `renovate.json`.
-
-## Local Quality Checks
-
-Install development dependencies:
-
-```bash
-make install-dev
-```
-
-Format and auto-fix local code before committing:
-
-```bash
-make format
-```
-
-Run the same core checks used by CI:
-
-```bash
-make check
-```
-
 ## Metrics
 
 - `codex_exporter_up`
