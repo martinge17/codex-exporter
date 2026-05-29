@@ -18,19 +18,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
+        with:
+          python-version: "3.14"
+
       - name: Install Python dependencies
         run: |
-          apt-get update
-          apt-get install -y --no-install-recommends python3 python3-venv
-          rm -rf /var/lib/apt/lists/*
-          python3 -m venv .venv
-          .venv/bin/python -m pip install --upgrade pip
-          .venv/bin/python -m pip install --no-cache-dir -r requirements-dev.txt
+          python -m pip install --upgrade pip
+          python -m pip install --no-cache-dir -r requirements-dev.txt
 
       - name: Run Ruff and whitespace checks
         run: |
-          .venv/bin/ruff format --check .
-          .venv/bin/ruff check .
+          ruff format --check .
+          ruff check .
           git diff --check
 
   test:
@@ -39,17 +40,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
+        with:
+          python-version: "3.14"
+
       - name: Install Python dependencies
         run: |
-          apt-get update
-          apt-get install -y --no-install-recommends python3 python3-venv
-          rm -rf /var/lib/apt/lists/*
-          python3 -m venv .venv
-          .venv/bin/python -m pip install --upgrade pip
-          .venv/bin/python -m pip install --no-cache-dir -r requirements-dev.txt
+          python -m pip install --upgrade pip
+          python -m pip install --no-cache-dir -r requirements-dev.txt
 
       - name: Run tests
-        run: .venv/bin/python -m pytest
+        run: python -m pytest
 
   coverage:
     runs-on: ubuntu-latest
@@ -60,20 +62,21 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
+        with:
+          python-version: "3.14"
+
       - name: Install Python dependencies
         run: |
-          apt-get update
-          apt-get install -y --no-install-recommends python3 python3-venv
-          rm -rf /var/lib/apt/lists/*
-          python3 -m venv .venv
-          .venv/bin/python -m pip install --upgrade pip
-          .venv/bin/python -m pip install --no-cache-dir -r requirements-dev.txt
+          python -m pip install --upgrade pip
+          python -m pip install --no-cache-dir -r requirements-dev.txt
 
       - name: Run coverage
         run: |
-          .venv/bin/coverage run -m pytest
-          .venv/bin/coverage report --fail-under=90
-          .venv/bin/coverage xml -o coverage.xml
+          coverage run -m pytest
+          coverage report --fail-under=90
+          coverage xml -o coverage.xml
 
       - name: Upload coverage report
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
