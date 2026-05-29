@@ -7,7 +7,9 @@ WORKDIR /build
 COPY requirements.txt .
 RUN python -m venv /opt/venv \
     && /opt/venv/bin/pip install --upgrade pip \
-    && /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
+    && /opt/venv/bin/pip install --no-cache-dir --no-compile -r requirements.txt \
+    && /opt/venv/bin/pip uninstall -y pip setuptools \
+    && find /opt/venv -type d -name '__pycache__' -prune -exec rm -rf '{}' +
 
 FROM python:3.14-slim-bookworm@sha256:a3974109d36f164ca70024bc0d0828ac706e4ccda849f8638d879e91f79e90ec AS runtime
 
@@ -17,7 +19,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PORT=9212 \
     HOST=0.0.0.0
 
-RUN groupadd --system --gid 10001 exporter \
+RUN apt-get update \
+    && apt-get upgrade -y --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd --system --gid 10001 exporter \
     && useradd --system --uid 10001 --gid exporter --home-dir /nonexistent --shell /usr/sbin/nologin exporter \
     && mkdir -p /app /data \
     && chown -R exporter:exporter /app /data
