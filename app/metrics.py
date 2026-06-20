@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import math
-import time
 from collections import defaultdict
 
 from .codex import CodexUsage
@@ -84,11 +83,3 @@ def _num(value: float) -> str:
     if not math.isfinite(float(value)):
         return "0"
     return f"{float(value):.6f}".rstrip("0").rstrip(".")
-
-
-def empty_metrics() -> str:
-    return render_metrics(None, exporter_up=False, auth_state=0, last_success_at=0, last_refresh_at=0)
-
-
-def now() -> float:
-    return time.time()
