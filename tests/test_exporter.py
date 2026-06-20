@@ -1,4 +1,4 @@
-import asyncio
+import pytest
 
 from app.codex import CodexError, CodexUsage, CodexWindow, DeviceAuthError, RefreshError
 from app.exporter import METRICS_MEDIA_TYPE, ExporterState
@@ -14,7 +14,6 @@ class FakeClient:
         self.exc = exc
         self.auth_exc = auth_exc
         self.fetch_calls = 0
-        self.ensure_calls = 0
 
     async def fetch_usage(self):
         self.fetch_calls += 1
@@ -23,16 +22,12 @@ class FakeClient:
         return self.usage
 
     async def ensure_token(self):
-        self.ensure_calls += 1
         if self.auth_exc is not None:
             raise self.auth_exc
 
 
-def test_exporter_refresh_usage_success_updates_cache():
-    asyncio.run(_check_exporter_refresh_usage_success_updates_cache())
-
-
-async def _check_exporter_refresh_usage_success_updates_cache():
+@pytest.mark.asyncio
+async def test_exporter_refresh_usage_success_updates_cache():
     usage = CodexUsage(
         plan_type="plus",
         windows=[CodexWindow(quota="five_hour", used_percent=10, reset_at=100, window_seconds=18000)],
@@ -47,11 +42,8 @@ async def _check_exporter_refresh_usage_success_updates_cache():
     assert state.last_success_at > 0
 
 
-def test_exporter_refresh_usage_records_errors():
-    asyncio.run(_check_exporter_refresh_usage_records_errors())
-
-
-async def _check_exporter_refresh_usage_records_errors():
+@pytest.mark.asyncio
+async def test_exporter_refresh_usage_records_errors():
     auth_state = ExporterState(FakeClient(exc=RefreshError("refresh failed")), Settings())
     scrape_state = ExporterState(FakeClient(exc=CodexError("upstream failed")), Settings())
 
@@ -62,11 +54,8 @@ async def _check_exporter_refresh_usage_records_errors():
     assert scrape_state.scrape_errors["error"] == 1
 
 
-def test_exporter_startup_auth_records_errors():
-    asyncio.run(_check_exporter_startup_auth_records_errors())
-
-
-async def _check_exporter_startup_auth_records_errors():
+@pytest.mark.asyncio
+async def test_exporter_startup_auth_records_errors():
     auth_state = ExporterState(FakeClient(auth_exc=DeviceAuthError("auth failed")), Settings())
     scrape_state = ExporterState(FakeClient(auth_exc=CodexError("startup failed")), Settings())
 
@@ -77,11 +66,8 @@ async def _check_exporter_startup_auth_records_errors():
     assert scrape_state.scrape_errors["error"] == 1
 
 
-def test_metrics_response_uses_fresh_cache_without_refresh():
-    asyncio.run(_check_metrics_response_uses_fresh_cache_without_refresh())
-
-
-async def _check_metrics_response_uses_fresh_cache_without_refresh():
+@pytest.mark.asyncio
+async def test_metrics_response_uses_fresh_cache_without_refresh():
     client = FakeClient()
     state = ExporterState(client, Settings(cache_ttl_seconds=120))
     state.cached_usage = CodexUsage(plan_type="plus", windows=[], captured_at=1)

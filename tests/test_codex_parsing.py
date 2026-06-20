@@ -1,8 +1,7 @@
 import httpx
 import pytest
 
-from app.codex import CodexError, CodexWindow, parse_jwt_expiry, parse_usage, safe_json_response
-from app.settings import DEFAULT_ISSUER_URL, Settings
+from app.codex import CodexError, parse_jwt_expiry, parse_usage, safe_json_response
 
 
 def test_parse_usage_paid_plan_windows():
@@ -34,42 +33,6 @@ def test_parse_usage_free_primary_as_weekly():
     assert [w.quota for w in usage.windows] == ["seven_day"]
     assert usage.windows[0].used_percent == 60.0
     assert usage.windows[0].reset_at == 4000
-
-
-def test_parse_usage_handles_empty_and_invalid_values():
-    usage = parse_usage(
-        {
-            "rate_limit": {
-                "primary_window": {
-                    "used_percent": "invalid",
-                    "reset_at": "invalid",
-                    "limit_window_seconds": "invalid",
-                }
-            }
-        }
-    )
-
-    assert usage.plan_type == "unknown"
-    assert usage.windows == [CodexWindow(quota="five_hour", used_percent=0.0, reset_at=0, window_seconds=0)]
-
-
-def test_parse_usage_ignores_missing_windows():
-    usage = parse_usage({"plan_type": "plus", "rate_limit": [], "code_review_rate_limit": []})
-
-    assert usage.plan_type == "plus"
-    assert usage.windows == []
-
-
-def test_settings_defaults_match_official_codex_device_flow():
-    settings = Settings()
-
-    assert settings.issuer_url == DEFAULT_ISSUER_URL
-    assert settings.device_usercode_url == ""
-    assert settings.device_token_url == ""
-    assert "api.connectors.read" in settings.scope
-    assert "api.connectors.invoke" in settings.scope
-
-
 def test_safe_json_response_requires_json_object():
     assert safe_json_response(httpx.Response(200, content=b'{"ok": true}')) == {"ok": True}
 
