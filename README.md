@@ -11,6 +11,25 @@ Small Prometheus exporter for OpenAI Codex subscription usage. It exposes only `
 - Stores OAuth token state only in `/data/codex-token-state.json`.
 - Does not log access tokens, refresh tokens, ID tokens, device codes, or usage response bodies.
 
+## Container Images and Releases
+
+Images are published to `ghcr.io/martinge17/codex-exporter` after tests and security scans pass:
+
+- Every published image has a commit-addressable `sha-<12-character-commit>` tag.
+- Successful builds from `main` update `edge`.
+- A release tag such as `v1.2.3` publishes `1.2.3`, `1.2`, `1`, and `latest`.
+- Release tags must use the exact `vMAJOR.MINOR.PATCH` format.
+
+Use an exact version or digest for production deployments. The moving `latest`, major, minor, and `edge` tags are intended for convenient updates.
+
+The Git tag is the source of truth; there is no separate application version file. To publish a release after merging to `main`:
+
+```bash
+git tag -a v1.0.0 -m "v1.0.0"
+git push origin v1.0.0
+gh release create v1.0.0 --verify-tag --generate-notes
+```
+
 ## First Run
 
 ```bash
