@@ -87,6 +87,7 @@ jobs:
           ignore-unfixed: true
           exit-code: 1
           format: sarif
+          limit-severities-for-sarif: true
           output: trivy-source.sarif
 
       - name: Upload Trivy report
@@ -175,6 +176,7 @@ jobs:
           ignore-unfixed: true
           exit-code: 1
           format: sarif
+          limit-severities-for-sarif: true
           output: trivy-image.sarif
 
       - name: Upload Trivy report
