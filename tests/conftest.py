@@ -29,23 +29,9 @@ def _json_response(status_code, data):
 
 
 def _patch_async_client(monkeypatch, handler):
-    class FakeAsyncClient:
-        def __init__(self, **_kwargs):
-            pass
-
-        async def __aenter__(self):
-            return self
-
-        async def __aexit__(self, *_args):
-            return None
-
-        async def get(self, url, **kwargs):
-            return handler("GET", url, **kwargs)
-
-        async def post(self, url, **kwargs):
-            return handler("POST", url, **kwargs)
-
-    monkeypatch.setattr(codex_module.httpx, "AsyncClient", FakeAsyncClient)
+    async_client = httpx.AsyncClient
+    transport = httpx.MockTransport(lambda request: handler(request.method, str(request.url)))
+    monkeypatch.setattr(codex_module.httpx, "AsyncClient", lambda **kwargs: async_client(transport=transport, **kwargs))
 
 
 @pytest.fixture

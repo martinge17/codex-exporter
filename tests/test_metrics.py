@@ -6,7 +6,6 @@ def test_render_metrics_escapes_labels_and_remaining():
     body = render_metrics(
         CodexUsage(
             plan_type='plus"team',
-            captured_at=10,
             windows=[CodexWindow(quota="five_hour", used_percent=33.25, reset_at=123, window_seconds=18000)],
         ),
         exporter_up=True,
@@ -28,7 +27,6 @@ def test_render_metrics_clamps_percentages():
     body = render_metrics(
         CodexUsage(
             plan_type="plus",
-            captured_at=10,
             windows=[CodexWindow(quota="five_hour", used_percent=150, reset_at=123, window_seconds=18000)],
         ),
         exporter_up=True,

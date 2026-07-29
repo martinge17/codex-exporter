@@ -1,3 +1,5 @@
+import asyncio
+
 import pytest
 
 from app.codex import AuthError, CodexClient, CodexError, RefreshError, parse_usage
@@ -37,8 +39,7 @@ def test_codex_client_update_token_state_requires_access_token(memory_token_stor
         client._update_token_state({})
 
 
-@pytest.mark.asyncio
-async def test_fetch_usage_retries_after_auth_error(memory_token_store):
+def test_fetch_usage_retries_after_auth_error(memory_token_store):
     client = CodexClient(Settings(), memory_token_store())
     calls = 0
     refreshed = False
@@ -58,15 +59,14 @@ async def test_fetch_usage_retries_after_auth_error(memory_token_store):
     client.refresh_or_device_auth = refresh
     client._fetch_usage_with_current_token = fetch_current
 
-    usage = await client.fetch_usage()
+    usage = asyncio.run(client.fetch_usage())
 
     assert usage.plan_type == "plus"
     assert refreshed is True
     assert calls == 2
 
 
-@pytest.mark.asyncio
-async def test_fetch_usage_with_current_token_success_and_fallback(monkeypatch, json_response, memory_token_store, patch_async_client):
+def test_fetch_usage_with_current_token_success_and_fallback(monkeypatch, json_response, memory_token_store, patch_async_client):
     calls = []
 
     def handler(method, url, **_kwargs):
@@ -81,35 +81,33 @@ async def test_fetch_usage_with_current_token_success_and_fallback(monkeypatch, 
         memory_token_store(TokenState(access_token="access")),
     )
 
-    usage = await client._fetch_usage_with_current_token()
+    usage = asyncio.run(client._fetch_usage_with_current_token())
 
     assert usage.plan_type == "plus"
     assert calls == [("GET", "https://primary.example/usage"), ("GET", "https://fallback.example/usage")]
     assert client.auth_state == 1
 
 
-@pytest.mark.asyncio
-async def test_fetch_usage_with_current_token_errors(monkeypatch, json_response, memory_token_store, patch_async_client):
-    patch_async_client(monkeypatch, lambda *_args, **_kwargs: json_response(401, {}))
+def test_fetch_usage_with_current_token_errors(monkeypatch, json_response, memory_token_store, patch_async_client):
+    statuses = iter((401, 500))
+    patch_async_client(monkeypatch, lambda *_args, **_kwargs: json_response(next(statuses), {}))
     client = CodexClient(Settings(), memory_token_store(TokenState(access_token="access")))
 
     with pytest.raises(AuthError):
-        await client._fetch_usage_with_current_token()
+        asyncio.run(client._fetch_usage_with_current_token())
     assert client.auth_state == 0
 
-    patch_async_client(monkeypatch, lambda *_args, **_kwargs: json_response(500, {}))
     with pytest.raises(CodexError, match="HTTP 500"):
-        await client._fetch_usage_with_current_token()
+        asyncio.run(client._fetch_usage_with_current_token())
 
 
-@pytest.mark.asyncio
-async def test_refresh_token_locked_success(monkeypatch, jwt, json_response, memory_token_store, patch_async_client):
+def test_refresh_token_locked_success(monkeypatch, jwt, json_response, memory_token_store, patch_async_client):
     store = memory_token_store()
     client = CodexClient(Settings(), store)
     client.token_state = TokenState(refresh_token="refresh")
     patch_async_client(monkeypatch, lambda *_args, **_kwargs: json_response(200, {"access_token": jwt({"exp": 3000})}))
 
-    await client._refresh_token_locked()
+    asyncio.run(client._refresh_token_locked())
 
     assert client.auth_state == 1
     assert client.last_refresh_at > 0

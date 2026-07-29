@@ -33,6 +33,8 @@ def test_parse_usage_free_primary_as_weekly():
     assert [w.quota for w in usage.windows] == ["seven_day"]
     assert usage.windows[0].used_percent == 60.0
     assert usage.windows[0].reset_at == 4000
+
+
 def test_safe_json_response_requires_json_object():
     assert safe_json_response(httpx.Response(200, content=b'{"ok": true}')) == {"ok": True}
 
