@@ -1,0 +1,27 @@
+services:
+  codex-exporter:
+    image: ghcr.io/martinge17/codex-exporter:latest
+    container_name: codex-exporter
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${PORT:-9212}:9212"
+    volumes:
+      - test-codex:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid,nodev
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 128
+    mem_limit: 128m
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+volumes:
+  test-codex:
