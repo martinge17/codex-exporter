@@ -19,10 +19,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PORT=9212 \
     HOST=0.0.0.0
 
-RUN apt-get update \
-    && apt-get upgrade -y --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/* \
-    && groupadd --system --gid 10001 exporter \
+RUN groupadd --system --gid 10001 exporter \
     && useradd --system --uid 10001 --gid exporter --home-dir /nonexistent --shell /usr/sbin/nologin exporter \
     && mkdir -p /app /data \
     && chown -R exporter:exporter /app /data
