@@ -3,34 +3,26 @@ updates:
   - package-ecosystem: pip
     directory: /
     schedule:
-      interval: daily
-      time: "04:00"
-      timezone: Etc/UTC
-    open-pull-requests-limit: 5
+      interval: weekly
     groups:
-      python-app:
+      python-dependencies:
         patterns:
-          - fastapi
-          - httpx
-          - uvicorn
-      python-dev:
-        patterns:
-          - coverage
-          - pytest
-          - ruff
+          - "*"
 
   - package-ecosystem: docker
     directory: /
     schedule:
-      interval: daily
-      time: "04:10"
-      timezone: Etc/UTC
-    open-pull-requests-limit: 3
+      interval: weekly
+    groups:
+      docker-dependencies:
+        patterns:
+          - "*"
 
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: daily
-      time: "04:20"
-      timezone: Etc/UTC
-    open-pull-requests-limit: 3
+      interval: weekly
+    groups:
+      github-actions:
+        patterns:
+          - "*"
