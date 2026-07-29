@@ -1,11 +1,9 @@
-from __future__ import annotations
-
 import json
 import os
 import tempfile
 import time
 from contextlib import suppress
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
@@ -33,14 +31,6 @@ class TokenState:
             expires_at=float(data.get("expires_at") or 0),
         )
 
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "access_token": self.access_token,
-            "refresh_token": self.refresh_token,
-            "id_token": self.id_token,
-            "expires_at": self.expires_at,
-        }
-
 
 class TokenStore:
     def __init__(self, path: str):
@@ -66,7 +56,7 @@ class TokenStore:
         fd, tmp_name = tempfile.mkstemp(prefix=self.path.name + ".", suffix=".tmp", dir=self.path.parent)
         try:
             with os.fdopen(fd, "w", encoding="utf-8") as fh:
-                json.dump(state.to_dict(), fh, separators=(",", ":"))
+                json.dump(asdict(state), fh, separators=(",", ":"))
                 fh.write("\n")
             os.chmod(tmp_name, 0o600)
             os.replace(tmp_name, self.path)

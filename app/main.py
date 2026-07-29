@@ -1,6 +1,3 @@
-from __future__ import annotations
-
-import asyncio
 import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
@@ -32,11 +29,10 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
             "usage_url": settings.usage_url,
         },
     )
-    startup_task = asyncio.create_task(exporter_state.ensure_auth_on_startup())
     try:
         yield
     finally:
-        await exporter_state.shutdown(startup_task)
+        await exporter_state.shutdown()
 
 
 app = FastAPI(title="Codex Prometheus Exporter", docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)

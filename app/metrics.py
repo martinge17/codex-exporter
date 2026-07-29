@@ -1,7 +1,4 @@
-from __future__ import annotations
-
 import math
-from collections import defaultdict
 
 from .codex import CodexUsage
 
@@ -59,9 +56,7 @@ def render_metrics(
     )
     if usage is not None:
         plan = _label(usage.plan_type)
-        seen = defaultdict(int)
         for window in usage.windows:
-            seen[window.quota] += 1
             quota = _label(window.quota)
             labels = f'quota="{quota}",plan="{plan}"'
             used = max(0.0, min(100.0, window.used_percent))

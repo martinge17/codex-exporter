@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import asyncio
 import base64
 import json
@@ -18,7 +16,6 @@ LOG = logging.getLogger("codex_exporter.codex")
 MAX_RESPONSE_BYTES = 128 * 1024
 CODEX_CLI_USER_AGENT = "codex-cli/1.0.0"
 EXPORTER_USER_AGENT = "codex-prometheus-exporter/1.0"
-FORM_CONTENT_TYPE = "application/x-www-form-urlencoded"
 
 
 class CodexError(Exception):
@@ -49,7 +46,6 @@ class CodexWindow:
 class CodexUsage:
     plan_type: str
     windows: list[CodexWindow]
-    captured_at: float
 
 
 class CodexClient:
@@ -214,7 +210,7 @@ class CodexClient:
             resp = await client.post(
                 self.settings.token_url,
                 data=form,
-                headers={"User-Agent": CODEX_CLI_USER_AGENT, "Content-Type": FORM_CONTENT_TYPE},
+                headers={"User-Agent": CODEX_CLI_USER_AGENT},
             )
         if resp.status_code != 200:
             raise DeviceAuthError(f"authorization code exchange returned HTTP {resp.status_code}")
@@ -265,7 +261,7 @@ def parse_usage(data: dict[str, Any]) -> CodexUsage:
     review = code_review_limit.get("primary_window") if isinstance(code_review_limit.get("primary_window"), dict) else None
     if review:
         windows.append(_parse_window("code_review", review))
-    return CodexUsage(plan_type=plan, windows=windows, captured_at=time.time())
+    return CodexUsage(plan_type=plan, windows=windows)
 
 
 def _window_seconds(window: dict[str, Any]) -> int:
