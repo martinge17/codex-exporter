@@ -42,13 +42,13 @@ class TokenStore:
                 data = json.load(fh)
         except FileNotFoundError:
             return None
-        except (OSError, TypeError, ValueError):
+        except OSError, TypeError, ValueError:
             return None
         if not isinstance(data, dict):
             return None
         try:
             return TokenState.from_dict(data)
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             return None
 
     def save(self, state: TokenState) -> None:
