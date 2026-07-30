@@ -267,7 +267,7 @@ def parse_usage(data: dict[str, Any]) -> CodexUsage:
 def _window_seconds(window: dict[str, Any]) -> int:
     try:
         return int(window.get("limit_window_seconds") or 0)
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         return 0
 
 
@@ -283,14 +283,14 @@ def _parse_window(quota: str, window: dict[str, Any]) -> CodexWindow:
 def _float(value: Any) -> float:
     try:
         return float(value or 0)
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         return 0.0
 
 
 def _int(value: Any) -> int:
     try:
         return int(value or 0)
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         return 0
 
 
