@@ -192,6 +192,8 @@ jobs:
           format: sarif
           limit-severities-for-sarif: true
           output: trivy-image.sarif
+          skip-setup-trivy: true
+
 
       - name: Upload Trivy report
         if: always()
