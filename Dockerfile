@@ -9,7 +9,8 @@ WORKDIR /app
 RUN python -m venv /app/venv
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir -r requirements.txt \
+RUN python -m pip install --no-cache-dir -r requirements.txt \
+    && python -m pip uninstall --yes pip \
     && mkdir /app/data
 
 FROM cgr.dev/chainguard/python:latest@sha256:e8525291a96a1bbd9e6e2006633b78f8105e0cdefd12e678f425ff703d73bfdf AS runtime
