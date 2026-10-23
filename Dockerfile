@@ -1,4 +1,4 @@
-FROM cgr.dev/chainguard/python:latest-dev@sha256:075c08ad4c1d529dfb0ee3aaeab034268c912771256132765bb0751d0dba6572 AS builder
+FROM cgr.dev/chainguard/python:latest-dev@sha256:7108dea9b9f31c30c20d43d17ecc61d4eb33789e9a8a10cd361e2ed37d8bd931 AS builder
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -13,7 +13,7 @@ RUN python -m pip install --no-cache-dir -r requirements.txt \
     && python -m pip uninstall --yes pip \
     && mkdir /app/data
 
-FROM cgr.dev/chainguard/python:latest@sha256:e8525291a96a1bbd9e6e2006633b78f8105e0cdefd12e678f425ff703d73bfdf AS runtime
+FROM cgr.dev/chainguard/python:latest@sha256:93c92d4ee2d0a4e540ec4de4e708267b45c2551a3c836fdf3e174a05017a76de AS runtime
 
 WORKDIR /app
 COPY --from=builder /app/venv /app/venv
