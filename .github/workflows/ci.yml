@@ -33,7 +33,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.14"
           cache: pip
@@ -57,13 +57,13 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@dc73d59c2d7bd4f8194098a91219eeee6d8a1719 # v4
+        uses: github/codeql-action/init@1f8cacc39019c823a7cedf81adf1819b6deeb96c # v4
         with:
           languages: python
           queries: security-extended,security-and-quality
 
       - name: Perform CodeQL analysis
-        uses: github/codeql-action/analyze@dc73d59c2d7bd4f8194098a91219eeee6d8a1719 # v4
+        uses: github/codeql-action/analyze@1f8cacc39019c823a7cedf81adf1819b6deeb96c # v4
 
   source-security:
     name: Trivy source scan
@@ -107,7 +107,7 @@ jobs:
 
       - name: Upload results to code scanning
         if: ${{ always() && !github.event.repository.private && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
-        uses: github/codeql-action/upload-sarif@dc73d59c2d7bd4f8194098a91219eeee6d8a1719 # v4
+        uses: github/codeql-action/upload-sarif@1f8cacc39019c823a7cedf81adf1819b6deeb96c # v4
         with:
           sarif_file: trivy-source.sarif
           category: trivy-source
@@ -205,7 +205,7 @@ jobs:
 
       - name: Upload results to code scanning
         if: ${{ always() && !github.event.repository.private && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
-        uses: github/codeql-action/upload-sarif@dc73d59c2d7bd4f8194098a91219eeee6d8a1719 # v4
+        uses: github/codeql-action/upload-sarif@1f8cacc39019c823a7cedf81adf1819b6deeb96c # v4
         with:
           sarif_file: trivy-image.sarif
           category: trivy-image
@@ -216,7 +216,7 @@ jobs:
 
       - name: Log in to GHCR
         if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) }}
-        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
